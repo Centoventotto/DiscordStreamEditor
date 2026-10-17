@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zip plugin
+        run: |
+          mkdir -p dist/discordStreamEditor
+          cp index.tsx settings.tsx stream.ts components.tsx README.md LICENSE dist/discordStreamEditor/
+          cd dist && zip -r ../discordStreamEditor.zip discordStreamEditor
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: DiscordStreamEditor ${{ github.ref_name }}
+          files: discordStreamEditor.zip
+          body: |
+            Equicord plugin to change almost every screen share parameter: resolution, aspect ratio, FPS, bitrate, keyframes, codecs and more.
+            **Even without Nitro you can stream at whatever quality you want.**
+
+            ### Installazione
+            1. Estrai `discordStreamEditor.zip` dentro `Equicord/src/userplugins/` (deve risultare `src/userplugins/discordStreamEditor/index.tsx`).
+            2. Esegui `pnpm build` e `pnpm inject`, poi riavvia Discord.
+            3. Attiva **DiscordStreamEditor** nelle impostazioni dei plugin.
